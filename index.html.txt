@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Mentalidad · Roger Jofre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mint: #9BE7DB;
+    --mint-light: #c8f4ee;
+    --mint-dark: #6dd4c4;
+    --tangerine: #F3843C;
+    --coral: #FF6A40;
+    --lime: #ACCD28;
+    --white: #ffffff;
+    --dark: #1a1a1a;
+    --dark-mid: #2d2d2d;
+    --text-muted: #5a5a5a;
+    --card-bg: rgba(255,255,255,0.92);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    min-height: 100vh;
+    font-family: 'Work Sans', sans-serif;
+    background: var(--mint);
+    overflow-x: hidden;
+  }
+
+  /* ANIMATED BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 15% 20%, rgba(243,132,60,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 85% 80%, rgba(172,205,40,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,255,255,0.25) 0%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* DECORATIVE CIRCLES */
+  body::after {
+    content: '';
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35);
+    top: -150px;
+    left: -150px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .deco-circle {
+    position: fixed;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .deco-circle-1 { width: 400px; height: 400px; bottom: -100px; right: -100px; }
+  .deco-circle-2 { width: 200px; height: 200px; top: 40%; right: 5%; border-color: rgba(243,132,60,0.3); }
+
+  /* WRAPPER */
+  #app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 52px 52px 44px;
+    max-width: 620px;
+    width: 100%;
+    box-shadow: 
+      0 4px 24px rgba(0,0,0,0.08),
+      0 1px 0 rgba(255,255,255,0.8) inset;
+    animation: cardIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card-fade {
+    animation: fadeSwitch 0.3s ease;
+  }
+  @keyframes fadeSwitch {
+    0% { opacity: 0; transform: translateX(20px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+
+  /* LOGO */
+  .logo-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  .logo-wrap img {
+    height: 64px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    margin-bottom: 32px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .progress-label {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tangerine);
+  }
+  .progress-count {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .progress-bar-bg {
+    width: 100%;
+    height: 5px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--tangerine), var(--coral));
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  /* TYPOGRAPHY */
+  h1.display {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.15;
+    color: var(--dark);
+    margin-bottom: 14px;
+  }
+  h1.display em {
+    font-style: italic;
+    color: var(--tangerine);
+  }
+
+  .subtitle {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--tangerine);
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+  }
+
+  .intro-text {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .question-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(20px, 4vw, 27px);
+    line-height: 1.3;
+    color: var(--dark);
+    margin-bottom: 32px;
+    min-height: 72px;
+  }
+
+  /* ANSWER OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(155,231,219,0.15);
+    border: 1.5px solid rgba(155,231,219,0.5);
+    border-radius: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--dark);
+    width: 100%;
+  }
+
+  .option-btn:hover {
+    background: rgba(243,132,60,0.08);
+    border-color: var(--tangerine);
+    transform: translateX(4px);
+  }
+
+  .option-btn.selected {
+    background: var(--tangerine);
+    border-color: var(--tangerine);
+    color: white;
+    transform: translateX(4px);
+  }
+
+  .option-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.6;
+  }
+
+  .option-btn.selected .option-dot {
+    background: white;
+    color: var(--tangerine);
+    opacity: 1;
+  }
+
+  /* BUTTONS */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--tangerine), var(--coral));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 17px 36px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(243,132,60,0.35);
+    letter-spacing: -0.01em;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(243,132,60,0.45);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    color: var(--text-muted);
+    border-radius: 12px;
+    padding: 13px 24px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .btn-ghost:hover { border-color: var(--tangerine); color: var(--tangerine); }
+
+  /* TAGS */
+  .tag {
+    display: inline-block;
+    background: rgba(172,205,40,0.2);
+    color: #6a7f10;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 99px;
+    margin-bottom: 20px;
+  }
+
+  /* TIME ESTIMATE */
+  .time-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 20px;
+  }
+  .time-badge span { opacity: 0.6; font-size: 15px; }
+
+  /* EMAIL SCREEN */
+  .email-section { margin-bottom: 10px; }
+  .email-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--dark-mid);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .email-input {
+    width: 100%;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    padding: 15px 18px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    color: var(--dark);
+    outline: none;
+    background: rgba(255,255,255,0.8);
+    transition: border-color 0.2s ease;
+    margin-bottom: 12px;
+  }
+  .email-input:focus { border-color: var(--tangerine); }
+  .email-disclaimer {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    opacity: 0.75;
+    line-height: 1.5;
+    margin-top: 14px;
+  }
+
+  /* CONSENT CHECKBOX */
+  .consent-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(155,231,219,0.12);
+    border: 1.5px solid rgba(155,231,219,0.5);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+  .consent-wrap:hover { border-color: var(--tangerine); }
+  .consent-wrap input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    margin-top: 1px;
+  }
+  .consent-wrap input[type="checkbox"]:checked {
+    background: var(--tangerine);
+    border-color: var(--tangerine);
+  }
+  .consent-wrap input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 6px;
+    height: 10px;
+    border: 2px solid white;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+  .consent-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--dark-mid);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+  }
+  @media (max-width: 600px) {
+    .consent-text { font-size: 12px; }
+  }
+
+  /* RESULTS */
+  .score-ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .score-ring {
+    position: relative;
+    width: 130px;
+    height: 130px;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring-value {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 46px;
+    line-height: 1;
+    color: var(--dark);
+  }
+  .score-of {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .result-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--tangerine);
+    text-align: center;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+  .result-message {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .next-step-box {
+    background: linear-gradient(135deg, rgba(243,132,60,0.08), rgba(255,106,64,0.06));
+    border: 1.5px solid rgba(243,132,60,0.25);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+  .next-step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--tangerine);
+    margin-bottom: 6px;
+  }
+  .next-step-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--dark-mid);
+    font-weight: 500;
+  }
+
+  .ethical-note {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    text-align: center;
+    opacity: 0.6;
+    line-height: 1.5;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: rgba(0,0,0,0.06);
+    margin: 24px 0;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .card { padding: 36px 28px 32px; border-radius: 22px; }
+    h1.display { font-size: 26px; }
+    .question-text { font-size: 20px; min-height: 64px; }
+  }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* HIDDEN form for ConvertKit */
+  #ck-form { display: none; }
+</style>
+</head>
+<body>
+
+<div class="deco-circle deco-circle-1"></div>
+<div class="deco-circle deco-circle-2"></div>
+
+<div id="app">
+  <div class="card" id="main-card">
+
+    <!-- SCREEN 0: WELCOME -->
+    <div class="screen active" id="screen-welcome">
+      <div class="logo-wrap">
+        <div style="width:180px;height:60px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 70" aria-label="Roger Jofre" style="display:block;"><circle cx="30" cy="35" r="22" fill="none" stroke="#F3843C" stroke-width="2.5"/><polygon points="30,14 46,44 14,44" fill="#F3843C"/><path d="M14,44 Q22,52 30,44 Q38,52 46,44" fill="none" stroke="#9BE7DB" stroke-width="2.5" stroke-linecap="round"/><text x="62" y="29" font-family="Georgia,serif" font-size="18" fill="#1a1a1a">Roger</text><text x="62" y="51" font-family="Georgia,serif" font-size="18" fill="#F3843C" font-style="italic">Jofre</text></svg></div>
+      </div>
+      <div class="tag">🧠 Quiz · Mentalidad</div>
+      <h1 class="display">¿Tu mente ahora mismo te <em>ayuda</em> o te <em>drena?</em></h1>
+      <p class="intro-text">Descubre en 90 segundos si tu estado mental está sosteniéndote durante el proceso o si necesita más estructura y apoyo.</p>
+      <button class="btn-primary" onclick="startQuiz()">
+        Hacer el quiz
+        <span>→</span>
+      </button>
+      <div class="time-badge">
+        <span>⏱</span> 7 preguntas · menos de 2 minutos
+      </div>
+    </div>
+
+    <!-- SCREEN 1-7: QUESTIONS -->
+    <div class="screen" id="screen-question">
+      <div class="logo-wrap" style="margin-bottom: 20px;">
+        <div style="width:130px;height:44px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 70" aria-label="Roger Jofre" style="display:block;"><circle cx="30" cy="35" r="22" fill="none" stroke="#F3843C" stroke-width="2.5"/><polygon points="30,14 46,44 14,44" fill="#F3843C"/><path d="M14,44 Q22,52 30,44 Q38,52 46,44" fill="none" stroke="#9BE7DB" stroke-width="2.5" stroke-linecap="round"/><text x="62" y="29" font-family="Georgia,serif" font-size="18" fill="#1a1a1a">Roger</text><text x="62" y="51" font-family="Georgia,serif" font-size="18" fill="#F3843C" font-style="italic">Jofre</text></svg></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Pregunta <span id="q-current">1</span> de 7</span>
+          <span class="progress-count" id="q-percent">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="q-bar" style="width: 0%"></div>
+        </div>
+      </div>
+      <p class="question-text" id="q-text"></p>
+      <div class="options" id="q-options"></div>
+      <button class="btn-primary" id="btn-next" onclick="nextQuestion()" disabled>
+        Siguiente <span>→</span>
+      </button>
+    </div>
+
+    <!-- SCREEN EMAIL -->
+    <div class="screen" id="screen-email">
+      <div class="logo-wrap">
+        <div style="width:150px;height:50px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 70" aria-label="Roger Jofre" style="display:block;"><circle cx="30" cy="35" r="22" fill="none" stroke="#F3843C" stroke-width="2.5"/><polygon points="30,14 46,44 14,44" fill="#F3843C"/><path d="M14,44 Q22,52 30,44 Q38,52 46,44" fill="none" stroke="#9BE7DB" stroke-width="2.5" stroke-linecap="round"/><text x="62" y="29" font-family="Georgia,serif" font-size="18" fill="#1a1a1a">Roger</text><text x="62" y="51" font-family="Georgia,serif" font-size="18" fill="#F3843C" font-style="italic">Jofre</text></svg></div>
+      </div>
+      <h1 class="display" style="font-size:26px; margin-bottom:10px;">¡Ya tienes tu resultado!</h1>
+      <p class="intro-text" style="margin-bottom: 24px;">Déjame tu correo para enviarte el resultado completo y los primeros pasos concretos para tu mentalidad.</p>
+      <div class="email-section">
+        <label class="email-label" for="email-input">Tu correo electrónico</label>
+        <input 
+          type="email" 
+          id="email-input" 
+          class="email-input" 
+          placeholder="hola@tucorreo.com"
+          oninput="validateLeadForm()"
+        >
+        <label class="consent-wrap" for="consent-check">
+          <input type="checkbox" id="consent-check" onchange="validateLeadForm()">
+          <span class="consent-text">He leído y acepto la política de privacidad y acepto recibir comunicaciones por email.</span>
+        </label>
+        <button class="btn-primary" id="btn-email" onclick="submitEmail()" disabled>
+          Ver mi resultado →
+        </button>
+      </div>
+      <p class="email-disclaimer">Sin spam. Solo contenido que te ayuda de verdad. Te puedes dar de baja cuando quieras.</p>
+    </div>
+
+    <!-- SCREEN RESULT -->
+    <div class="screen" id="screen-result">
+      <div class="logo-wrap" style="margin-bottom:16px;">
+        <div style="width:130px;height:44px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 70" aria-label="Roger Jofre" style="display:block;"><circle cx="30" cy="35" r="22" fill="none" stroke="#F3843C" stroke-width="2.5"/><polygon points="30,14 46,44 14,44" fill="#F3843C"/><path d="M14,44 Q22,52 30,44 Q38,52 46,44" fill="none" stroke="#9BE7DB" stroke-width="2.5" stroke-linecap="round"/><text x="62" y="29" font-family="Georgia,serif" font-size="18" fill="#1a1a1a">Roger</text><text x="62" y="51" font-family="Georgia,serif" font-size="18" fill="#F3843C" font-style="italic">Jofre</text></svg></div>
+      </div>
+      <p class="subtitle" style="text-align:center; margin-bottom: 4px;">Tu resultado</p>
+      <div class="score-ring-wrap">
+        <div class="score-ring">
+          <svg width="130" height="130" viewBox="0 0 130 130">
+            <circle cx="65" cy="65" r="55" fill="none" stroke="#f0f0f0" stroke-width="10"/>
+            <circle cx="65" cy="65" r="55" fill="none" 
+              stroke="url(#scoreGrad)" stroke-width="10"
+              stroke-linecap="round"
+              id="score-circle"
+              stroke-dasharray="345.4"
+              stroke-dashoffset="345.4"/>
+            <defs>
+              <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#F3843C"/>
+                <stop offset="100%" style="stop-color:#FF6A40"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="score-ring-value">
+            <span class="score-number" id="result-score">0</span>
+            <span class="score-of">/ 10</span>
+          </div>
+        </div>
+      </div>
+      <p class="result-name" id="result-name"></p>
+      <p class="result-message" id="result-message"></p>
+      <div class="next-step-box">
+        <p class="next-step-label">✦ Tu siguiente paso</p>
+        <p class="next-step-text" id="result-next-step"></p>
+      </div>
+      <button class="btn-primary" onclick="ctaClick()" id="btn-cta">
+        Seguir en Instagram →
+      </button>
+      <button class="btn-ghost" onclick="restartQuiz()">Repetir el quiz</button>
+      <p class="ethical-note" id="ethical-note">Este quiz no da consejo médico ni sustituye acompañamiento profesional. Si hay empeoramiento brusco, fiebre, sangrado o síntomas preocupantes, consulta con tu equipo sanitario.</p>
+    </div>
+
+  </div><!-- /card -->
+</div><!-- /app -->
+
+<script>
+// logo rendered as inline SVG
+
+});
+
+const QUESTIONS = [
+  "Al despertar, sé cuál es mi pequeña prioridad de hoy.",
+  "Distingo lo que depende de mí de lo que no.",
+  "Cuando aparece miedo, sé cómo bajarlo un poco.",
+  "Mi diálogo interno me ayuda más de lo que me hunde.",
+  "Puedo tener un mal día sin darlo todo por perdido.",
+  "Tengo alguna rutina que me da estructura.",
+  "Pido ayuda emocional antes de explotar."
+];
+
+const ANSWERS = ["No ahora", "Un poco", "Bastante", "Sí, casi siempre"];
+
+const CONVERSION = [
+  {min:0,  max:2,  nota:1},
+  {min:3,  max:4,  nota:2},
+  {min:5,  max:6,  nota:3},
+  {min:7,  max:8,  nota:4},
+  {min:9,  max:10, nota:5},
+  {min:11, max:12, nota:6},
+  {min:13, max:14, nota:7},
+  {min:15, max:16, nota:8},
+  {min:17, max:18, nota:9},
+  {min:19, max:21, nota:10}
+];
+
+const RESULTS = [
+  {
+    rango: [1,3],
+    nombre: "Modo niebla",
+    mensaje: "Tu cabeza ahora mismo no te está ayudando demasiado. No necesitas hacerlo perfecto: necesitas un ancla pequeña para hoy.",
+    siguiente_paso: "Antes de buscar más información o técnicas, lo primero es encontrar ese punto fijo de tu día. Una sola acción concreta que te ancle. Eso es por donde empezamos juntos."
+  },
+  {
+    rango: [4,6],
+    nombre: "Aguantas, pero te drena",
+    mensaje: "Vas tirando, pero tu mente sigue gastando demasiada energía. Ya no toca solo resistir: toca poner estructura.",
+    siguiente_paso: "Resistir sin estructura acaba por agotar. El siguiente paso es construir un sistema mental sencillo que te sostenga también en los días difíciles. Eso es lo que trabajamos."
+  },
+  {
+    rango: [7,8],
+    nombre: "Buena base",
+    mensaje: "Tu mentalidad ya te sostiene en varias cosas. El siguiente paso es reforzar los hábitos mentales que también funcionen en los días malos.",
+    siguiente_paso: "Tienes recursos, pero todavía hay puntos donde te cuesta más. El trabajo ahora es afinar esos hábitos para que no dependan solo de los días buenos."
+  },
+  {
+    rango: [9,10],
+    nombre: "Dirección interna",
+    mensaje: "Estás transitando esto con bastante dirección. Aun así, tu fortaleza crece más cuando no dependes solo de la fuerza de voluntad.",
+    siguiente_paso: "La fortaleza real no es aguantar más: es necesitar menos esfuerzo para sostenerte. Hay un siguiente nivel que no requiere más sacrificio, sino más estructura interna."
+  }
+];
+
+let currentQ = 0;
+let scores = [];
+let selectedOption = null;
+let totalScore = 0;
+let finalNote = 0;
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const card = document.getElementById('main-card');
+  card.classList.remove('card-fade');
+  void card.offsetWidth;
+  card.classList.add('card-fade');
+
+  // logos are inline SVGs
+}
+
+function startQuiz() {
+  currentQ = 0;
+  scores = [];
+  showQuestion();
+  showScreen('screen-question');
+}
+
+function showQuestion() {
+  selectedOption = null;
+  document.getElementById('btn-next').disabled = true;
+  document.getElementById('q-current').textContent = currentQ + 1;
+  const pct = Math.round((currentQ / 7) * 100);
+  document.getElementById('q-percent').textContent = pct + '%';
+  document.getElementById('q-bar').style.width = pct + '%';
+  document.getElementById('q-text').textContent = QUESTIONS[currentQ];
+
+  const optContainer = document.getElementById('q-options');
+  optContainer.innerHTML = '';
+
+  ANSWERS.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-dot">${i === 0 ? '○' : i === 1 ? '◎' : i === 2 ? '●' : '★'}</span>${ans}`;
+    btn.onclick = () => selectOption(i, btn);
+    optContainer.appendChild(btn);
+  });
+}
+
+function selectOption(value, btn) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedOption = value;
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQuestion() {
+  if (selectedOption === null) return;
+  scores.push(selectedOption);
+
+  if (currentQ < 6) {
+    currentQ++;
+    showQuestion();
+    // animate progress
+    const pct = Math.round(((currentQ) / 7) * 100);
+    document.getElementById('q-percent').textContent = pct + '%';
+    document.getElementById('q-bar').style.width = pct + '%';
+    document.getElementById('q-current').textContent = currentQ + 1;
+  } else {
+    // Done with questions
+    totalScore = scores.reduce((a, b) => a + b, 0);
+    finalNote = convertScore(totalScore);
+    showScreen('screen-email');
+  }
+}
+
+function convertScore(raw) {
+  for (const row of CONVERSION) {
+    if (raw >= row.min && raw <= row.max) return row.nota;
+  }
+  return 10;
+}
+
+function getResult(nota) {
+  return RESULTS.find(r => nota >= r.rango[0] && nota <= r.rango[1]) || RESULTS[3];
+}
+
+function validateLeadForm() {
+  const emailVal = document.getElementById('email-input').value;
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+  const checkValid = document.getElementById('consent-check').checked;
+  document.getElementById('btn-email').disabled = !(emailValid && checkValid);
+}
+
+function submitEmail() {
+  const email = document.getElementById('email-input').value.trim();
+  const checked = document.getElementById('consent-check').checked;
+  if (!email || !checked) return;
+
+  const formData = new FormData();
+  formData.append('email_address', email);
+  try {
+    formData.append('fields[quiz_score]', finalNote);
+    formData.append('fields[quiz_raw]', totalScore);
+    formData.append('fields[quiz_name]', getResult(finalNote).nombre);
+  } catch(e) { /* silent — don't break main submission */ }
+
+  fetch('https://app.convertkit.com/forms/8879080/subscriptions', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: formData
+  }).catch(() => { /* silent fail */ });
+
+  showResult();
+}
+
+function showResult() {
+  const result = getResult(finalNote);
+
+  document.getElementById('result-score').textContent = finalNote;
+  document.getElementById('result-name').textContent = result.nombre;
+  document.getElementById('result-message').textContent = result.mensaje;
+  document.getElementById('result-next-step').textContent = result.siguiente_paso;
+
+  showScreen('screen-result');
+
+  // Animate score ring
+  setTimeout(() => {
+    const circumference = 345.4;
+    const offset = circumference - (finalNote / 10) * circumference;
+    const circle = document.getElementById('score-circle');
+    circle.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.34,1.56,0.64,1)';
+    circle.style.strokeDashoffset = offset;
+  }, 200);
+}
+
+function ctaClick() {
+  window.open('https://www.instagram.com/roger_jofre?igsh=MXFkbHVjZHoyZTd1Yw%3D%3D&utm_source=qr', '_blank');
+}
+
+function restartQuiz() {
+  currentQ = 0;
+  scores = [];
+  selectedOption = null;
+  document.getElementById('email-input').value = '';
+  document.getElementById('consent-check').checked = false;
+  document.getElementById('btn-email').disabled = true;
+  showScreen('screen-welcome');
+}
+
+
+});
+</script>
+</body>
+</html>
