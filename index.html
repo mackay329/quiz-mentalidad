@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>#kit-hidden,#kit-hidden *{position:absolute!important;left:-9999px!important;top:-9999px!important;visibility:hidden!important;pointer-events:none!important;height:0!important;overflow:hidden!important;opacity:0!important}</style>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -413,16 +414,42 @@ function sendEmail() {
   var chk = document.getElementById('chk').checked;
   if (!email || !chk) return;
   var res = getResult(finalNote);
-  var fd = new FormData();
-  fd.append('email_address', email);
-  try {
-    fd.append('fields[quiz_score]', finalNote);
-    fd.append('fields[quiz_raw]', rawTotal);
-    fd.append('fields[quiz_name]', res.name);
-  } catch(e) {}
-  fetch('https://app.convertkit.com/forms/8879080/subscriptions', {
-    method:'POST', mode:'no-cors', body:fd
-  }).catch(function(){});
+
+  // Method 1: Try Kit form programmatic submit
+  function tryKitForm() {
+    try {
+      var kitForm = document.querySelector('[data-uid="6df8ac4b7a"] form');
+      if (kitForm) {
+        var emailInput = kitForm.querySelector('input[type="email"], input[name="email_address"]');
+        if (emailInput) {
+          emailInput.value = email;
+          var evt = new Event('input', {bubbles:true});
+          emailInput.dispatchEvent(evt);
+          kitForm.submit();
+          return true;
+        }
+      }
+    } catch(e) {}
+    return false;
+  }
+
+  // Method 2: Fetch fallback to Kit API
+  function fetchFallback() {
+    try {
+      var fd = new FormData();
+      fd.append('email_address', email);
+      fd.append('fields[quiz_score]', String(finalNote));
+      fd.append('fields[quiz_raw]', String(rawTotal));
+      fd.append('fields[quiz_name]', res.name);
+      fetch('https://app.kit.com/forms/6df8ac4b7a/subscriptions', {
+        method:'POST', mode:'no-cors', body:fd
+      }).catch(function(){});
+    } catch(e) {}
+  }
+
+  // Try both, never block the flow
+  if (!tryKitForm()) { fetchFallback(); }
+
   showResult();
 }
 
@@ -451,6 +478,16 @@ function restart() {
   document.getElementById('score-arc').style.strokeDashoffset = '314.16';
   show('s-welcome');
 }
+
+// Load Kit script silently in background
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://rogerjofre.kit.com/6df8ac4b7a/index.js';
+  s.async = true;
+  s.setAttribute('data-uid', '6df8ac4b7a');
+  document.getElementById('kit-hidden').appendChild(s);
+})();
 </script>
+<div id="kit-hidden"><div data-uid="6df8ac4b7a"></div></div>
 </body>
 </html>
