@@ -203,6 +203,7 @@ h1.hero em{font-style:italic;color:var(--tangerine)}
 </style>
 </head>
 <body>
+<iframe id="kit-iframe" name="kit-iframe" style="display:none" aria-hidden="true"></iframe>
 <div class="deco deco-a"></div>
 <div class="deco deco-b"></div>
 <div id="app">
@@ -281,7 +282,7 @@ h1.hero em{font-style:italic;color:var(--tangerine)}
         <p class="next-label">✦ Tu siguiente paso</p>
         <p class="next-txt" id="r-next"></p>
       </div>
-      <button class="btn" onclick="window.open('https://www.instagram.com/roger_jofre?igsh=MXFkbHVjZHoyZTd1Yw%3D%3D&utm_source=qr','_blank')">Seguir en Instagram →</button>
+      <button class="btn" onclick="window.open('https://www.youtube.com/@roger_jofre','_blank')">Suscríbete a mi canal de YouTube</button>
       <button class="btn-ghost" onclick="restart()">Repetir el quiz</button>
       <p class="ethical">Este quiz no da consejo médico ni sustituye acompañamiento profesional. Si hay empeoramiento brusco, fiebre, sangrado o síntomas preocupantes, consulta con tu equipo sanitario.</p>
     </div>
@@ -413,42 +414,22 @@ function sendEmail() {
   var email = document.getElementById('email-in').value.trim();
   var chk = document.getElementById('chk').checked;
   if (!email || !chk) return;
-  var res = getResult(finalNote);
 
-  // Method 1: Try Kit form programmatic submit
-  function tryKitForm() {
-    try {
-      var kitForm = document.querySelector('[data-uid="6df8ac4b7a"] form');
-      if (kitForm) {
-        var emailInput = kitForm.querySelector('input[type="email"], input[name="email_address"]');
-        if (emailInput) {
-          emailInput.value = email;
-          var evt = new Event('input', {bubbles:true});
-          emailInput.dispatchEvent(evt);
-          kitForm.submit();
-          return true;
-        }
-      }
-    } catch(e) {}
-    return false;
-  }
-
-  // Method 2: Fetch fallback to Kit API
-  function fetchFallback() {
-    try {
-      var fd = new FormData();
-      fd.append('email_address', email);
-      fd.append('fields[quiz_score]', String(finalNote));
-      fd.append('fields[quiz_raw]', String(rawTotal));
-      fd.append('fields[quiz_name]', res.name);
-      fetch('https://app.kit.com/forms/6df8ac4b7a/subscriptions', {
-        method:'POST', mode:'no-cors', body:fd
-      }).catch(function(){});
-    } catch(e) {}
-  }
-
-  // Try both, never block the flow
-  if (!tryKitForm()) { fetchFallback(); }
+  try {
+    var f = document.createElement('form');
+    f.method = 'POST';
+    f.action = 'https://app.kit.com/forms/9290322/subscriptions';
+    f.target = 'kit-iframe';
+    f.style.display = 'none';
+    var inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = 'email_address';
+    inp.value = email;
+    f.appendChild(inp);
+    document.body.appendChild(f);
+    f.submit();
+    setTimeout(function(){ document.body.removeChild(f); }, 3000);
+  } catch(e) {}
 
   showResult();
 }
